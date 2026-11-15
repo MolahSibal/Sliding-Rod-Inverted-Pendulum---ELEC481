@@ -86,6 +86,19 @@ S0 = dcgain(S_num);
 
 k_pfc = S0+R0/G2_dc;
 fprintf('The prefilter gain =%.6f\n',k_pfc);
+disp('All Classical Controllers are tuned');
+sim("ECP_InvertedPendulum.slx",20);
+
+%% Plotting the response
+figure;
+plot(t,theta_ref,'-r');
+hold on;
+plot(t,theta_out,'-b');
+hold off;
+title('Reference & Plant Response');
+xlabel('Time (s)');
+ylabel('Amplitude (\circ)')
+legend('theta_{ref}','theta_{out}');
 
 
 
