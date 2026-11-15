@@ -9,7 +9,7 @@ m_w2 = 1.000;       %Mass of brass balance weight
 m_2o = 0.785 ;      %Mass of the complete moving assembly minus m1 and m_w2
 l_co = 0.0711;      %Position of cg of the complete pendulum with the sliding rod and balance weight removed
 J_star_o = 0.0246;  %Inertia evaluated when m_w2 = 0;
-l_w2 = 0.1084;      %Signed distance from pivot to c.g of balance mass
+l_w2 = -0.1084;      %Signed distance from pivot to c.g of balance mass
 g = 9.807;
 k_f = 0.0013;       %Combined DAC-amplifier-motor-pulley gain
 k_x = 50200;        %Sliding rod encoder
@@ -72,9 +72,21 @@ s = tf('s');
 R_num = r_1_val*s + r_0_val;
 S_num = s_1_val*s + s_0_val;
 G2_num = k_star*tf(num_g2,den_g2);
-D_cl_numeric = (den_g2*s*R_num + k_star*num_g2*s*S_num);
 T_cl = feedback(G2_num*S_num/R_num,1);
 disp('Actual closed-loop poles:')
 disp(pole(T_cl))
 disp('Desired closed-loop poles:')
 disp([-pi+1i*pi; -pi-1i*pi; -3*pi])
+
+% Prefilter gain
+G2_dc = dcgain(G2_num);
+
+R0 = dcgain(R_num);
+S0 = dcgain(S_num);
+
+k_pfc = S0+R0/G2_dc;
+fprintf('The prefilter gain =%.6f\n',k_pfc);
+
+
+
+
